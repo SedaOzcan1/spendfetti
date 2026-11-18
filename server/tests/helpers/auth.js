@@ -9,7 +9,7 @@ export async function createAuthedAgent(app, overrides = {}) {
   const res = await agent.post('/api/auth/register').send({
     name: `User ${counter}`,
     email: `user${counter}@example.com`,
-    password: 'correct-horse',
+    password: 'correct-horse-1',
     ...overrides,
   });
   if (res.status !== 201) throw new Error(`Registration failed: ${JSON.stringify(res.body)}`);

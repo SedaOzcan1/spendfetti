@@ -26,6 +26,7 @@ const userSchema = new Schema(
     funBudgetPromptEnabled: { type: Boolean, default: true },
     funBudgetRatio: { type: Number, default: 0.2, min: 0, max: 1 },
     confettiEnabled: { type: Boolean, default: true },
+    lastLoginAt: { type: Date },
     seenAchievements: { type: [seenAchievementSchema], default: [] },
   },
   {

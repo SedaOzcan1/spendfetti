@@ -7,7 +7,7 @@ import { useTestDb } from './helpers/db.js';
 useTestDb();
 
 const app = createApp();
-const credentials = { name: 'Ada', email: 'ada@example.com', password: 'correct-horse' };
+const credentials = { name: 'Ada', email: 'ada@example.com', password: 'correct-horse-1' };
 
 const authCookie = (res) =>
   (res.headers['set-cookie'] ?? []).find((c) => c.startsWith(`${AUTH_COOKIE_NAME}=`));
@@ -115,5 +115,75 @@ describe('POST /api/auth/logout', () => {
     expect(authCookie(res)).toMatch(/Expires=Thu, 01 Jan 1970/);
 
     expect((await agent.get('/api/auth/me')).status).toBe(401);
+  });
+});
+
+describe('password rules', () => {
+  it.each(['onlyletters', '12345678'])('rejects "%s"', async (password) => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({ ...credentials, password });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('PATCH /api/auth/me', () => {
+  it('updates profile and preferences', async () => {
+    const agent = request.agent(app);
+    await agent.post('/api/auth/register').send(credentials);
+
+    const res = await agent.patch('/api/auth/me').send({
+      name: 'Ada L.',
+      city: 'Izmir',
+      confettiEnabled: false,
+      funBudgetPromptEnabled: false,
+      funBudgetRatio: 0.3,
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.user).toMatchObject({
+      name: 'Ada L.',
+      city: 'Izmir',
+      confettiEnabled: false,
+      funBudgetPromptEnabled: false,
+      funBudgetRatio: 0.3,
+    });
+  });
+
+  it('ignores fields that are not editable (e.g. email)', async () => {
+    const agent = request.agent(app);
+    await agent.post('/api/auth/register').send(credentials);
+
+    const res = await agent.patch('/api/auth/me').send({ name: 'Ada', email: 'evil@example.com' });
+    expect(res.body.user.email).toBe(credentials.email);
+  });
+
+  it('validates the ratio', async () => {
+    const agent = request.agent(app);
+    await agent.post('/api/auth/register').send(credentials);
+    expect((await agent.patch('/api/auth/me').send({ funBudgetRatio: 2 })).status).toBe(400);
+  });
+});
+
+describe('PUT /api/auth/password', () => {
+  it('changes the password when the current one is correct', async () => {
+    const agent = request.agent(app);
+    await agent.post('/api/auth/register').send(credentials);
+
+    const wrong = await agent
+      .put('/api/auth/password')
+      .send({ currentPassword: 'nope', newPassword: 'brand-new-2' });
+    expect(wrong.status).toBe(400);
+
+    const ok = await agent
+      .put('/api/auth/password')
+      .send({ currentPassword: credentials.password, newPassword: 'brand-new-2' });
+    expect(ok.status).toBe(204);
+
+    const login = await request(app)
+      .post('/api/auth/login')
+      .send({ email: credentials.email, password: 'brand-new-2' });
+    expect(login.status).toBe(200);
+    expect(login.body.user.lastLoginAt).toBeDefined();
   });
 });

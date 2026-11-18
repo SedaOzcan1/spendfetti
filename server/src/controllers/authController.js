@@ -7,7 +7,12 @@ import { User } from '../models/index.js';
 const BCRYPT_ROUNDS = 12;
 
 // bcrypt only uses the first 72 bytes of a password
-const passwordSchema = z.string().min(8, 'Password must be at least 8 characters').max(72);
+const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .max(72)
+  .regex(/[a-zA-Z]/, 'Password must contain a letter')
+  .regex(/\d/, 'Password must contain a number');
 
 export const registerSchema = z.object({
   name: z.string().trim().min(1).max(80),
@@ -21,6 +26,23 @@ export const loginSchema = z.object({
   password: z.string().min(1).max(72),
 });
 
+export const updateMeSchema = z
+  .object({
+    name: z.string().trim().min(1).max(80),
+    city: z.string().trim().max(80),
+    currency: z.string().trim().length(3).toUpperCase(),
+    confettiEnabled: z.boolean(),
+    funBudgetPromptEnabled: z.boolean(),
+    funBudgetRatio: z.number().min(0.01).max(1),
+  })
+  .partial()
+  .refine((body) => Object.keys(body).length > 0, 'At least one field is required');
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1).max(72),
+  newPassword: passwordSchema,
+});
+
 export async function register(req, res) {
   const { name, email, password, city } = req.validated.body;
 
@@ -29,7 +51,7 @@ export async function register(req, res) {
   }
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
-  const user = await User.create({ name, email, passwordHash, city });
+  const user = await User.create({ name, email, passwordHash, city, lastLoginAt: new Date() });
 
   setAuthCookie(res, user._id);
   res.status(201).json({ user });
@@ -42,6 +64,9 @@ export async function login(req, res) {
   const isValid = user ? await bcrypt.compare(password, user.passwordHash) : false;
   if (!isValid) throw HttpError.unauthorized('Invalid email or password');
 
+  user.lastLoginAt = new Date();
+  await user.save();
+
   setAuthCookie(res, user._id);
   res.json({ user });
 }
@@ -53,4 +78,23 @@ export function logout(_req, res) {
 
 export function me(req, res) {
   res.json({ user: req.user });
+}
+
+export async function updateMe(req, res) {
+  req.user.set(req.validated.body);
+  await req.user.save();
+  res.json({ user: req.user });
+}
+
+export async function changePassword(req, res) {
+  const { currentPassword, newPassword } = req.validated.body;
+  const user = await User.findById(req.user._id).select('+passwordHash');
+
+  if (!(await bcrypt.compare(currentPassword, user.passwordHash))) {
+    throw HttpError.badRequest('Current password is incorrect');
+  }
+
+  user.passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+  await user.save();
+  res.status(204).end();
 }
