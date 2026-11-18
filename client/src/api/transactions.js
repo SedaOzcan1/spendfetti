@@ -14,7 +14,7 @@ function useInvalidateMoneyData() {
   const queryClient = useQueryClient();
   return () =>
     Promise.all(
-      ['transactions', 'summary', 'budgets'].map((key) =>
+      ['transactions', 'summary', 'budgets', 'fun-budget', 'notifications'].map((key) =>
         queryClient.invalidateQueries({ queryKey: [key] }),
       ),
     );

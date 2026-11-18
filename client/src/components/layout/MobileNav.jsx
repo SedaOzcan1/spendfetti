@@ -1,5 +1,6 @@
 import { Settings } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
+import { NotificationBell } from '../../features/notifications/NotificationBell.jsx';
 import { Logo } from './Logo.jsx';
 import { NAV_ITEMS } from './navItems.js';
 
@@ -7,13 +8,16 @@ export function MobileTopBar() {
   return (
     <div className="flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top)+1rem)] lg:hidden">
       <Logo showTagline={false} />
-      <Link
-        to="/settings"
-        aria-label="Settings"
-        className="grid size-11 place-items-center rounded-xl bg-sidebar text-ink"
-      >
-        <Settings className="size-5" strokeWidth={1.8} />
-      </Link>
+      <div className="flex items-center gap-2">
+        <NotificationBell />
+        <Link
+          to="/settings"
+          aria-label="Settings"
+          className="grid size-11 place-items-center rounded-xl bg-sidebar text-ink"
+        >
+          <Settings className="size-5" strokeWidth={1.8} />
+        </Link>
+      </div>
     </div>
   );
 }

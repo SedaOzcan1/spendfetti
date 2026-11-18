@@ -15,6 +15,7 @@ function useInvalidateBudgets() {
     Promise.all([
       queryClient.invalidateQueries({ queryKey: ['budgets'] }),
       queryClient.invalidateQueries({ queryKey: ['summary'] }),
+      queryClient.invalidateQueries({ queryKey: ['notifications'] }),
     ]);
 }
 

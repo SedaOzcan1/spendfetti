@@ -26,6 +26,7 @@ export function useDecideFunBudget() {
     onSuccess: (_data, body) => {
       queryClient.invalidateQueries({ queryKey: ['fun-budget'] });
       queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
       if (body.neverAsk) queryClient.invalidateQueries({ queryKey: meQueryKey });
     },
   });
