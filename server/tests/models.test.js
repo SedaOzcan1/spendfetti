@@ -93,7 +93,7 @@ describe('Budget', () => {
     const user = await createUser();
     const category = await Category.create({ userId: user._id, name: 'Pets', type: 'expense' });
     const budget = await Budget.create({ userId: user._id, categoryId: category._id, limit: 500 });
-    expect(budget.alertThreshold).toBe(0.8);
+    expect(budget.alertThreshold).toBe(0.9);
 
     await expect(
       Budget.create({ userId: user._id, categoryId: category._id, limit: 300 }),

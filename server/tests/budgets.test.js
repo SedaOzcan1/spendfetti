@@ -19,7 +19,7 @@ describe('/api/budgets', () => {
 
     const created = await agent.put(`/api/budgets/${ids.groceries}`).send({ limit: 9000 });
     expect(created.status).toBe(200);
-    expect(created.body.budget).toMatchObject({ limit: 9000, alertThreshold: 0.8 });
+    expect(created.body.budget).toMatchObject({ limit: 9000, alertThreshold: 0.9 });
 
     const updated = await agent
       .put(`/api/budgets/${ids.groceries}`)
@@ -33,7 +33,7 @@ describe('/api/budgets', () => {
     await agent.put(`/api/budgets/${ids.transport}`).send({ limit: 1000 });
     await agent.put(`/api/budgets/${ids.housing}`).send({ limit: 1000 });
     await addTransaction(agent, { categoryId: ids.groceries, amount: 1200 });
-    await addTransaction(agent, { categoryId: ids.transport, amount: 850 });
+    await addTransaction(agent, { categoryId: ids.transport, amount: 950 });
     await addTransaction(agent, {
       categoryId: ids.housing,
       amount: 999,
@@ -43,7 +43,7 @@ describe('/api/budgets', () => {
     const res = await agent.get('/api/budgets?month=2026-11');
     expect(res.body.budgets.map((b) => [b.category.name, b.spent, b.status])).toEqual([
       ['Groceries', 1200, 'exceeded'],
-      ['Transport', 850, 'warning'],
+      ['Transport', 950, 'warning'],
       ['Rent', 0, 'ok'],
     ]);
   });

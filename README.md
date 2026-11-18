@@ -4,6 +4,14 @@
 
 A full stack expense tracker: a Node.js + Express + MongoDB API and a React + Vite client.
 
+## Design
+
+The UI follows the Figma design in [`docs/design`](docs/design) (desktop and mobile).
+
+| Overview                                       | Transactions                                          | Budgets                                     |
+| ---------------------------------------------- | ----------------------------------------------------- | ------------------------------------------- |
+| ![Overview](docs/design/desktop-dashboard.jpg) | ![Transactions](docs/design/desktop-transactions.jpg) | ![Budgets](docs/design/desktop-budgets.jpg) |
+
 ## Structure
 
 ```
@@ -28,9 +36,11 @@ npm run dev   # API + client together
 ```
 
 - Client: http://localhost:5173 (`/api` requests are proxied to port 4000)
+- Demo account (when `SEED_DEMO=true`): **demo@spendfetti.app** / **spendfetti1** — six months of sample data
 - API: http://localhost:4000/api/health
 
 To run them separately: `npm run dev:server`, `npm run dev:client`.
+To load the demo account into a persistent database: `npm run seed:demo -w server`.
 
 ## Scripts
 
@@ -51,7 +61,7 @@ To run them separately: `npm run dev:server`, `npm run dev:client`.
 - [x] T5 Transactions & categories API
 - [x] T6 Summary & budgets API
 - [ ] T7 API integration tests
-- [ ] T8 Frontend
+- [x] T8 Frontend
 - [ ] T9 Deploy & README
 - [ ] T10 Fun budget API
 - [ ] T11 Events API

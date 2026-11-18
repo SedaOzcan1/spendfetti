@@ -81,7 +81,8 @@ export async function getMonthlySummary(user, month) {
     comparison: {
       incomeChangePct: percentChange(current.income, previous.income),
       expenseChangePct: percentChange(current.expense, previous.expense),
-      expenseToIncomeRatio: totals.income > 0 ? round2(totals.expense / totals.income) : null,
+      expenseToIncomeRatio:
+        totals.income > 0 ? Math.round((totals.expense / totals.income) * 1000) / 1000 : null,
     },
     byCategory,
     trend,

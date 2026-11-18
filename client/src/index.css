@@ -1,6 +1,49 @@
+@import '@fontsource-variable/inter';
 @import 'tailwindcss';
 
 @theme {
-  --color-brand: #7c3aed;
-  --color-accent: #f59e0b;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-page: #f8f7f3;
+  --color-sidebar: #f0f1e9;
+  --color-nav-active: #e2e6d8;
+  --color-line: #e8e9e1;
+  --color-subtle: #f5f6f0;
+  --color-ink: #242c29;
+  --color-muted: #757b74;
+
+  --color-forest: #253d33;
+  --color-forest-soft: #3c5345;
+  --color-mint: #e8eedc;
+  --color-mint-strong: #e9eecf;
+  --color-coral: #d95138;
+  --color-coral-dark: #c2452e;
+  --color-blush: #fcf0e9;
+  --color-cream: #f4ede1;
+
+  --color-sage: #526a4b;
+  --color-sage-light: #7e926d;
+  --color-peach: #ebb39e;
+  --color-tan: #d9ad78;
+  --color-lavender: #a6a2c0;
+  --color-lavender-light: #ecebf3;
+  --color-stone: #d5d9cc;
+  --color-income: #3f6b52;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-sage);
+    outline-offset: 2px;
+  }
 }

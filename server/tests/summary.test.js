@@ -54,7 +54,7 @@ describe('GET /api/summary', () => {
     expect(comparison).toEqual({
       incomeChangePct: 12.5,
       expenseChangePct: 100,
-      expenseToIncomeRatio: 0.53,
+      expenseToIncomeRatio: 0.533,
     });
 
     expect(byCategory.map((c) => [c.name, c.total, c.share])).toEqual([

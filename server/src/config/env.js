@@ -10,6 +10,10 @@ const envSchema = z
     JWT_SECRET: z.string().min(1).default(DEV_JWT_SECRET),
     JWT_EXPIRES_IN_DAYS: z.coerce.number().int().positive().default(7),
     CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
+    SEED_DEMO: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((value) => value === 'true'),
   })
   .refine((env) => env.NODE_ENV !== 'production' || env.JWT_SECRET !== DEV_JWT_SECRET, {
     message: 'JWT_SECRET must be set in production',

@@ -7,7 +7,7 @@ const budgetSchema = new Schema(
     // Monthly spending limit for the category
     limit: { type: Number, required: true, min: 0.01 },
     // Ratio of the limit at which a "close to limit" warning is raised
-    alertThreshold: { type: Number, default: 0.8, min: 0.1, max: 1 },
+    alertThreshold: { type: Number, default: 0.9, min: 0.1, max: 1 },
   },
   {
     timestamps: true,
