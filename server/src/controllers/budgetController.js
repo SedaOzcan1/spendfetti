@@ -4,6 +4,7 @@ import { amountSchema, monthSchema, objectIdSchema } from '../lib/schemas.js';
 import { Budget } from '../models/index.js';
 import { getBudgetsWithSpending } from '../services/budgetService.js';
 import { getUsableCategory } from '../services/categoryService.js';
+import { checkBudgetAlerts } from '../services/notificationService.js';
 import { toMonthKey } from '../utils/month.js';
 
 export const listBudgetsQuerySchema = z.object({ month: monthSchema.optional() });
@@ -29,6 +30,8 @@ export async function upsertBudget(req, res) {
     { $set: req.validated.body },
     { upsert: true, returnDocument: 'after', runValidators: true, setDefaultsOnInsert: true },
   );
+  // A lower limit may already be close to (or past) this month's spending
+  await checkBudgetAlerts(req.user._id, toMonthKey(), categoryId);
   res.json({ budget });
 }
 

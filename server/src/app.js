@@ -10,6 +10,7 @@ import categoriesRouter from './routes/categories.js';
 import eventsRouter from './routes/events.js';
 import funBudgetRouter from './routes/funBudget.js';
 import healthRouter from './routes/health.js';
+import notificationsRouter from './routes/notifications.js';
 import summaryRouter from './routes/summary.js';
 import transactionsRouter from './routes/transactions.js';
 
@@ -33,6 +34,7 @@ export function createApp() {
   app.use('/api/fun-budget', funBudgetRouter);
   app.use('/api/events', eventsRouter);
   app.use('/api/achievements', achievementsRouter);
+  app.use('/api/notifications', notificationsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

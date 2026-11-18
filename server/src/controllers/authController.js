@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { clearAuthCookie, setAuthCookie } from '../lib/authToken.js';
 import { HttpError } from '../lib/httpError.js';
 import { User } from '../models/index.js';
+import { notifyWelcome } from '../services/notificationService.js';
 
 const BCRYPT_ROUNDS = 12;
 
@@ -53,6 +54,7 @@ export async function register(req, res) {
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
   const user = await User.create({ name, email, passwordHash, city, lastLoginAt: new Date() });
+  await notifyWelcome(user._id);
 
   setAuthCookie(res, user._id);
   res.status(201).json({ user });

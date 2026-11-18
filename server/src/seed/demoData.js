@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { Budget, Category, Transaction, User } from '../models/index.js';
+import { Budget, Category, Notification, Transaction, User } from '../models/index.js';
 import { shiftMonth, toMonthKey } from '../utils/month.js';
+import { checkBudgetAlerts, notifyWelcome } from '../services/notificationService.js';
 import { seedDefaultCategories } from './defaultCategories.js';
 
 export const DEMO_USER = {
@@ -91,6 +92,7 @@ export async function seedDemoUser(now = new Date()) {
   await Promise.all([
     Transaction.deleteMany({ userId: user._id }),
     Budget.deleteMany({ userId: user._id }),
+    Notification.deleteMany({ userId: user._id }),
   ]);
 
   const month = toMonthKey(now);
@@ -120,5 +122,7 @@ export async function seedDemoUser(now = new Date()) {
     })),
   );
 
+  await notifyWelcome(user._id);
+  await checkBudgetAlerts(user._id, month);
   return user;
 }

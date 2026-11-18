@@ -9,6 +9,7 @@ import {
 import { Transaction } from '../models/index.js';
 import { firstTransactionAchievement } from '../services/achievementService.js';
 import { getUsableCategory } from '../services/categoryService.js';
+import { afterExpenseChange } from '../services/notificationService.js';
 import { monthRange, toMonthKey } from '../utils/month.js';
 
 const dateSchema = z.coerce.date().refine((d) => !Number.isNaN(d.getTime()), 'Invalid date');
@@ -82,6 +83,7 @@ export async function createTransaction(req, res) {
 
   const transaction = await Transaction.create({ ...body, userId: req.user._id });
   const achievements = await firstTransactionAchievement(req.user, transaction.date);
+  await afterExpenseChange(req.user._id, transaction);
   res.status(201).json({ transaction, achievements });
 }
 
@@ -99,6 +101,7 @@ export async function updateTransaction(req, res) {
 
   transaction.set(updates);
   await transaction.save();
+  await afterExpenseChange(req.user._id, transaction);
   res.json({ transaction });
 }
 
