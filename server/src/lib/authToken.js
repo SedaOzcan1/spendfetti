@@ -30,8 +30,12 @@ const cookieOptions = () => ({
   path: '/',
 });
 
-export function setAuthCookie(res, userId) {
-  res.cookie(AUTH_COOKIE_NAME, signAuthToken(userId), { ...cookieOptions(), maxAge: maxAgeMs() });
+/** `remember: false` issues a session cookie that ends when the browser closes. */
+export function setAuthCookie(res, userId, { remember = true } = {}) {
+  res.cookie(AUTH_COOKIE_NAME, signAuthToken(userId), {
+    ...cookieOptions(),
+    ...(remember && { maxAge: maxAgeMs() }),
+  });
 }
 
 export function clearAuthCookie(res) {

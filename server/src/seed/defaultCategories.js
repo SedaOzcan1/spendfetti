@@ -1,26 +1,27 @@
 import { Category, FUN_CATEGORY_SLUG } from '../models/index.js';
 
+// Colors follow the design palette (see client/src/theme/colors.js)
 export const DEFAULT_CATEGORIES = [
-  { slug: 'groceries', name: 'Groceries', type: 'expense', icon: '🛒', color: '#10b981' },
-  { slug: 'dining-out', name: 'Dining Out', type: 'expense', icon: '🍽️', color: '#f97316' },
-  { slug: 'transport', name: 'Transport', type: 'expense', icon: '🚌', color: '#0ea5e9' },
-  { slug: 'housing', name: 'Housing', type: 'expense', icon: '🏠', color: '#6366f1' },
-  { slug: 'bills', name: 'Bills & Utilities', type: 'expense', icon: '💡', color: '#eab308' },
-  { slug: 'health', name: 'Health', type: 'expense', icon: '🩺', color: '#ef4444' },
-  { slug: 'shopping', name: 'Shopping', type: 'expense', icon: '🛍️', color: '#ec4899' },
-  { slug: 'education', name: 'Education', type: 'expense', icon: '📚', color: '#14b8a6' },
+  { slug: 'housing', name: 'Rent', type: 'expense', icon: '🏠', color: '#526a4b' },
+  { slug: 'groceries', name: 'Groceries', type: 'expense', icon: '🛒', color: '#d9ad78' },
+  { slug: 'dining-out', name: 'Food & Drink', type: 'expense', icon: '☕', color: '#d95138' },
+  { slug: 'transport', name: 'Transport', type: 'expense', icon: '🚌', color: '#a6a2c0' },
+  { slug: 'bills', name: 'Bills & Utilities', type: 'expense', icon: '💡', color: '#7e926d' },
+  { slug: 'health', name: 'Health', type: 'expense', icon: '🩺', color: '#ebb39e' },
+  { slug: 'shopping', name: 'Shopping', type: 'expense', icon: '🛍️', color: '#c98b6b' },
+  { slug: 'education', name: 'Education', type: 'expense', icon: '📚', color: '#6f8fa3' },
   {
     slug: FUN_CATEGORY_SLUG,
     name: 'Fun & Activities',
     type: 'expense',
     icon: '🎉',
-    color: '#7c3aed',
+    color: '#253d33',
   },
-  { slug: 'other-expense', name: 'Other', type: 'expense', icon: '📦', color: '#64748b' },
-  { slug: 'salary', name: 'Salary', type: 'income', icon: '💼', color: '#22c55e' },
-  { slug: 'freelance', name: 'Freelance', type: 'income', icon: '🧑‍💻', color: '#06b6d4' },
-  { slug: 'gifts', name: 'Gifts', type: 'income', icon: '🎁', color: '#f43f5e' },
-  { slug: 'other-income', name: 'Other', type: 'income', icon: '💰', color: '#84cc16' },
+  { slug: 'other-expense', name: 'Other', type: 'expense', icon: '📦', color: '#d5d9cc' },
+  { slug: 'salary', name: 'Salary', type: 'income', icon: '💼', color: '#526a4b' },
+  { slug: 'freelance', name: 'Freelance', type: 'income', icon: '🧑‍💻', color: '#7e926d' },
+  { slug: 'gifts', name: 'Gifts', type: 'income', icon: '🎁', color: '#d9ad78' },
+  { slug: 'other-income', name: 'Other', type: 'income', icon: '💰', color: '#d5d9cc' },
 ];
 
 /** Idempotently upserts the built-in categories (keyed by slug). */

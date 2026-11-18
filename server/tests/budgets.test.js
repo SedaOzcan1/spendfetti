@@ -44,7 +44,7 @@ describe('/api/budgets', () => {
     expect(res.body.budgets.map((b) => [b.category.name, b.spent, b.status])).toEqual([
       ['Groceries', 1200, 'exceeded'],
       ['Transport', 850, 'warning'],
-      ['Housing', 0, 'ok'],
+      ['Rent', 0, 'ok'],
     ]);
   });
 

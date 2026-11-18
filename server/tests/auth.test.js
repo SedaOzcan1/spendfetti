@@ -187,3 +187,14 @@ describe('PUT /api/auth/password', () => {
     expect(login.body.user.lastLoginAt).toBeDefined();
   });
 });
+
+describe('remember me', () => {
+  it('issues a session cookie when remember is false', async () => {
+    await request(app).post('/api/auth/register').send(credentials);
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ email: credentials.email, password: credentials.password, remember: false });
+
+    expect(authCookie(res)).not.toMatch(/Max-Age|Expires/i);
+  });
+});

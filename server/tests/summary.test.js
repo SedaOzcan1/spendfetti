@@ -58,9 +58,9 @@ describe('GET /api/summary', () => {
     });
 
     expect(byCategory.map((c) => [c.name, c.total, c.share])).toEqual([
-      ['Housing', 12000, 0.5],
+      ['Rent', 12000, 0.5],
       ['Groceries', 7500, 0.31],
-      ['Dining Out', 4500, 0.19],
+      ['Food & Drink', 4500, 0.19],
     ]);
 
     expect(trend.map((t) => t.month)).toEqual([
@@ -76,7 +76,7 @@ describe('GET /api/summary', () => {
 
     expect(budgets).toHaveLength(1);
     expect(budgets[0]).toMatchObject({
-      category: { name: 'Dining Out' },
+      category: { name: 'Food & Drink' },
       limit: 5000,
       spent: 4500,
       remaining: 500,

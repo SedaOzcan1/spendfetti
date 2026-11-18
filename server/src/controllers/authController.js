@@ -24,6 +24,7 @@ export const registerSchema = z.object({
 export const loginSchema = z.object({
   email: z.email().trim().toLowerCase(),
   password: z.string().min(1).max(72),
+  remember: z.boolean().default(true),
 });
 
 export const updateMeSchema = z
@@ -58,7 +59,7 @@ export async function register(req, res) {
 }
 
 export async function login(req, res) {
-  const { email, password } = req.validated.body;
+  const { email, password, remember } = req.validated.body;
   const user = await User.findOne({ email }).select('+passwordHash');
 
   const isValid = user ? await bcrypt.compare(password, user.passwordHash) : false;
@@ -67,7 +68,7 @@ export async function login(req, res) {
   user.lastLoginAt = new Date();
   await user.save();
 
-  setAuthCookie(res, user._id);
+  setAuthCookie(res, user._id, { remember });
   res.json({ user });
 }
 
