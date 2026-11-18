@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { env, isProduction } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+import achievementsRouter from './routes/achievements.js';
 import authRouter from './routes/auth.js';
 import budgetsRouter from './routes/budgets.js';
 import categoriesRouter from './routes/categories.js';
@@ -31,6 +32,7 @@ export function createApp() {
   app.use('/api/budgets', budgetsRouter);
   app.use('/api/fun-budget', funBudgetRouter);
   app.use('/api/events', eventsRouter);
+  app.use('/api/achievements', achievementsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

@@ -4,6 +4,16 @@
 
 A full stack expense tracker: a Node.js + Express + MongoDB API and a React + Vite client.
 
+## Features
+
+- **Transactions** — income and expenses with categories, search, filters, sorting and CSV export
+- **Overview** — monthly totals, 6-month trend, spending by category (Chart.js)
+- **Budgets** — monthly limits per category with warnings near the limit
+- **Fun budget** — close a month with a surplus and set part of it aside for fun
+- **Activities** — browse events that fit your remaining fun budget (city, date, type, price)
+- **Confetti** 🎉 — short celebrations for wins (surplus month, budgets met, first transaction);
+  respects `prefers-reduced-motion` and can be turned off in Settings
+
 ## Design
 
 The UI follows the Figma design in [`docs/design`](docs/design) (desktop and mobile).
@@ -66,4 +76,4 @@ To load the demo account into a persistent database: `npm run seed:demo -w serve
 - [x] T10 Fun budget API
 - [x] T11 Events API
 - [x] T12 Fun budget prompt & Activities page
-- [ ] T13 Confetti effects
+- [x] T13 Confetti effects

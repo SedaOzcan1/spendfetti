@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useMarkAchievementsSeen } from '../../api/achievements.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDecideFunBudget, useFunBudgetPrompt } from '../../api/funBudget.js';
 import { Button } from '../../components/ui/Button.jsx';
@@ -8,6 +9,7 @@ import { Modal } from '../../components/ui/Modal.jsx';
 import { ApiError } from '../../lib/apiClient.js';
 import { formatMoney, formatPercent } from '../../lib/format.js';
 import { formatMonth } from '../../lib/month.js';
+import { useConfetti } from '../celebrations/CelebrationProvider.jsx';
 
 function ConfettiDecor() {
   const pieces = [
@@ -40,6 +42,7 @@ const REASON_COPY = {
 function PromptBody({ prompt, month, onClose }) {
   const navigate = useNavigate();
   const decide = useDecideFunBudget();
+  const { celebrate } = useConfetti();
   const [amount, setAmount] = useState(String(prompt.suggestedAmount));
   const [neverAsk, setNeverAsk] = useState(false);
   const fieldErrors = decide.error instanceof ApiError ? decide.error.fieldErrors : {};
@@ -51,6 +54,7 @@ function PromptBody({ prompt, month, onClose }) {
       { month, amount: Number(amount) },
       {
         onSuccess: () => {
+          celebrate({ preset: 'cannons', message: 'Fun budget set aside. Enjoy!' });
           onClose();
           navigate('/activities');
         },
@@ -134,6 +138,23 @@ function PromptBody({ prompt, month, onClose }) {
 
 export function FunBudgetPromptModal({ open, month, onClose }) {
   const prompt = useFunBudgetPrompt(month, { enabled: open });
+  const { celebrate } = useConfetti();
+  const markSeen = useMarkAchievementsSeen();
+  const celebratedRef = useRef(false);
+  const shouldCelebrate = open && prompt.data?.show;
+  const balance = prompt.data?.balance;
+
+  // Big burst as the popup opens; the dashboard won't repeat it.
+  useEffect(() => {
+    if (!open) celebratedRef.current = false;
+    if (!shouldCelebrate || celebratedRef.current) return;
+    celebratedRef.current = true;
+    celebrate({
+      preset: 'burst',
+      message: `You saved ${formatMoney(balance, { decimals: 0 })} this month!`,
+    });
+    markSeen.mutate({ month, keys: ['month_positive'] });
+  }, [open, shouldCelebrate, balance, month, celebrate, markSeen]);
 
   return (
     <Modal open={open} onClose={onClose} className="sm:max-w-lg" ariaLabel="Close the month">

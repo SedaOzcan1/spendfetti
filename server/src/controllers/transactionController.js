@@ -7,6 +7,7 @@ import {
   transactionTypeSchema,
 } from '../lib/schemas.js';
 import { Transaction } from '../models/index.js';
+import { firstTransactionAchievement } from '../services/achievementService.js';
 import { getUsableCategory } from '../services/categoryService.js';
 import { monthRange, toMonthKey } from '../utils/month.js';
 
@@ -80,7 +81,8 @@ export async function createTransaction(req, res) {
   await assertCategoryMatchesType(req.user._id, body.categoryId, body.type);
 
   const transaction = await Transaction.create({ ...body, userId: req.user._id });
-  res.status(201).json({ transaction });
+  const achievements = await firstTransactionAchievement(req.user, transaction.date);
+  res.status(201).json({ transaction, achievements });
 }
 
 export async function updateTransaction(req, res) {

@@ -1,5 +1,6 @@
 import { Category, Transaction } from '../models/index.js';
 import { monthRange, shiftMonth } from '../utils/month.js';
+import { earnedAchievements, isMonthClosed, unseen } from './achievementService.js';
 import { getBudgetsWithSpending } from './budgetService.js';
 
 export const TREND_MONTHS = 6;
@@ -70,10 +71,12 @@ export async function getMonthlySummary(user, month) {
   const totals = { ...current, balance: round2(current.income - current.expense) };
   delete totals.month;
 
-  const [byCategory, budgets] = await Promise.all([
+  const [byCategory, budgets, monthClosed] = await Promise.all([
     categoryBreakdown(user._id, month, totals.expense),
     getBudgetsWithSpending(user._id, month),
+    isMonthClosed(user._id, month),
   ]);
+  const earned = earnedAchievements({ closed: monthClosed, balance: totals.balance, budgets });
 
   return {
     month,
@@ -87,6 +90,9 @@ export async function getMonthlySummary(user, month) {
     byCategory,
     trend,
     budgets,
+    monthClosed,
+    // Achievements earned this month that the user hasn't celebrated yet
+    achievements: unseen(user, month, earned),
     funBudget: {
       ratio: user.funBudgetRatio,
       suggestedAmount: totals.balance > 0 ? Math.floor(totals.balance * user.funBudgetRatio) : 0,

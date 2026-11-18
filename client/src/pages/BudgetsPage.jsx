@@ -2,6 +2,7 @@ import { Pencil, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useBudgets } from '../api/budgets.js';
 import { useCategories } from '../api/categories.js';
+import { useSummary } from '../api/summary.js';
 import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { Card } from '../components/ui/Card.jsx';
@@ -11,6 +12,7 @@ import { StatCard } from '../components/ui/StatCard.jsx';
 import { budgetColor } from '../features/budgets/budgetColors.js';
 import { BudgetModal } from '../features/budgets/BudgetModal.jsx';
 import { CategoryModal } from '../features/budgets/CategoryModal.jsx';
+import { MetBadge } from '../features/dashboard/BudgetOverview.jsx';
 import { formatMoney, formatPercent } from '../lib/format.js';
 import { useMonth } from '../lib/MonthContext.jsx';
 
@@ -21,12 +23,15 @@ function statusText(budget) {
   return `${formatMoney(budget.remaining, { decimals: 0 })} more to spend`;
 }
 
-function BudgetCard({ budget, onEdit }) {
+function BudgetCard({ budget, onEdit, monthClosed }) {
   const color = budgetColor(budget);
   return (
     <Card className="flex flex-col p-6 sm:p-8">
       <div className="flex items-start justify-between gap-3">
-        <h2 className="text-xl font-semibold text-ink">{budget.category.name}</h2>
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="text-xl font-semibold text-ink">{budget.category.name}</h2>
+          {monthClosed && budget.spent <= budget.limit && <MetBadge />}
+        </div>
         <button
           type="button"
           onClick={onEdit}
@@ -67,6 +72,7 @@ function BudgetCard({ budget, onEdit }) {
 export default function BudgetsPage() {
   const { month } = useMonth();
   const budgets = useBudgets(month);
+  const monthClosed = useSummary(month).data?.monthClosed ?? false;
   const { data: categories = [] } = useCategories();
   const [editing, setEditing] = useState(null); // budget | 'new' | null
   const [creatingCategory, setCreatingCategory] = useState(false);
@@ -132,7 +138,12 @@ export default function BudgetsPage() {
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {list.map((budget) => (
-              <BudgetCard key={budget.id} budget={budget} onEdit={() => setEditing(budget)} />
+              <BudgetCard
+                key={budget.id}
+                budget={budget}
+                monthClosed={monthClosed}
+                onEdit={() => setEditing(budget)}
+              />
             ))}
 
             <Card tone="muted" className="flex flex-col p-6 sm:p-8">

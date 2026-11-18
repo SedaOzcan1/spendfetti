@@ -5,6 +5,7 @@ import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { PageError, PageLoading } from '../components/ui/PageState.jsx';
 import { BudgetOverview } from '../features/dashboard/BudgetOverview.jsx';
 import { FunBudgetCard } from '../features/dashboard/FunBudgetCard.jsx';
+import { useAchievementCelebrations } from '../features/celebrations/useAchievementCelebrations.js';
 import { FunBudgetPromptModal } from '../features/funBudget/FunBudgetPromptModal.jsx';
 import { RecentTransactions } from '../features/dashboard/RecentTransactions.jsx';
 import { SpendingInsights } from '../features/dashboard/SpendingInsights.jsx';
@@ -18,6 +19,7 @@ export default function DashboardPage() {
   const [promptOpen, setPromptOpen] = useState(false);
   const summary = useSummary(month);
   const firstName = user?.name.split(' ')[0];
+  useAchievementCelebrations(summary.data);
 
   return (
     <>
@@ -42,7 +44,7 @@ export default function DashboardPage() {
           </div>
           <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
             <RecentTransactions month={month} />
-            <BudgetOverview budgets={summary.data.budgets} />
+            <BudgetOverview budgets={summary.data.budgets} monthClosed={summary.data.monthClosed} />
           </div>
         </div>
       )}

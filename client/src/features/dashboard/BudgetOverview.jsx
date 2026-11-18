@@ -5,6 +5,14 @@ import { ProgressBar } from '../../components/ui/ProgressBar.jsx';
 import { formatMoney } from '../../lib/format.js';
 import { budgetColor } from '../budgets/budgetColors.js';
 
+export function MetBadge() {
+  return (
+    <span className="rounded-full bg-mint px-2 py-0.5 text-xs font-medium text-forest">
+      🎉 Budget met!
+    </span>
+  );
+}
+
 function alertMessage(budget) {
   if (budget.status === 'exceeded') {
     return `You’re ${formatMoney(-budget.remaining, { decimals: 0 })} over your ${budget.category.name} limit.`;
@@ -12,12 +20,12 @@ function alertMessage(budget) {
   return `${formatMoney(budget.remaining, { decimals: 0 })} left in your ${budget.category.name} limit.`;
 }
 
-export function BudgetOverview({ budgets }) {
+export function BudgetOverview({ budgets, monthClosed = false }) {
   const shown = budgets.slice(0, 3);
   const alert = budgets.find((b) => b.status !== 'ok');
 
   return (
-    <Card className="flex flex-col p-5 sm:p-8">
+    <Card className="flex flex-col p-5 sm:p-8" data-celebrate="budgets">
       <CardHeader title="Is your budget on track?" subtitle="Know your limits, spend with ease." />
 
       {shown.length === 0 ? (
@@ -32,7 +40,10 @@ export function BudgetOverview({ budgets }) {
           {shown.map((budget) => (
             <li key={budget.id}>
               <div className="mb-3 flex items-baseline gap-3 text-[15px]">
-                <span className="flex-1 text-ink">{budget.category.name}</span>
+                <span className="flex flex-1 flex-wrap items-center gap-2 text-ink">
+                  {budget.category.name}
+                  {monthClosed && budget.spent <= budget.limit && <MetBadge />}
+                </span>
                 <span className="font-semibold text-ink tabular-nums">
                   {formatMoney(budget.spent, { decimals: 0 })}
                 </span>

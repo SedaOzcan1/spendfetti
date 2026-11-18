@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
+import { CelebrationProvider } from '../features/celebrations/CelebrationProvider.jsx';
 import { MonthProvider } from '../lib/MonthContext.jsx';
 
 export function renderWithProviders(ui, { route = '/', month = '2026-11' } = {}) {
@@ -9,7 +10,9 @@ export function renderWithProviders(ui, { route = '/', month = '2026-11' } = {})
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[route]}>
-        <MonthProvider initialMonth={month}>{ui}</MonthProvider>
+        <MonthProvider initialMonth={month}>
+          <CelebrationProvider>{ui}</CelebrationProvider>
+        </MonthProvider>
       </MemoryRouter>
     </QueryClientProvider>,
   );

@@ -17,7 +17,7 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password');
-    const [, options] = fetchMock.mock.calls[0];
+    const [, options] = fetchMock.mock.calls.find(([url]) => url.endsWith('/auth/login'));
     expect(JSON.parse(options.body)).toEqual({
       email: 'ada@example.com',
       password: 'wrong-pass-1',

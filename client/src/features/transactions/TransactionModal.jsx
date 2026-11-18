@@ -91,7 +91,7 @@ function TransactionForm({ transaction, defaults, onDone }) {
         date: new Date(`${form.date}T12:00:00Z`).toISOString(),
         note: form.note || undefined,
       },
-      { onSuccess: () => onDone({ created: !isEdit }) },
+      { onSuccess: (result) => onDone({ created: !isEdit, result }) },
     );
   };
 
@@ -218,9 +218,9 @@ export function TransactionModal({ open, transaction, defaults, onClose, onCreat
         key={transaction?.id ?? 'new'}
         transaction={transaction}
         defaults={defaults}
-        onDone={({ created }) => {
+        onDone={({ created, result }) => {
           onClose();
-          if (created) onCreated?.();
+          if (created) onCreated?.(result);
         }}
       />
     </Modal>

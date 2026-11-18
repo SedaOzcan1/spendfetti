@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
 import { vi } from 'vitest';
+import { confettiFire } from '../../test/setup.js';
 import { mockApi, renderWithProviders } from '../../test/utils.jsx';
 import { FunBudgetPromptModal } from './FunBudgetPromptModal.jsx';
 
@@ -42,6 +43,22 @@ describe('FunBudgetPromptModal', () => {
 
     expect(await screen.findByText('Activities page')).toBeInTheDocument();
     expect(sent).toEqual({ month: '2026-11', amount: 2500 });
+  });
+
+  it('bursts confetti once when the popup opens and marks month_positive as seen', async () => {
+    let seen;
+    mockApi({
+      'GET /api/fun-budget/prompt': [200, prompt],
+      'POST /api/achievements/seen': ({ body }) => {
+        seen = body;
+        return [204];
+      },
+    });
+    setup();
+
+    await screen.findByRole('heading', { name: /You saved/ });
+    await vi.waitFor(() => expect(confettiFire).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(seen).toEqual({ month: '2026-11', keys: ['month_positive'] }));
   });
 
   it('dismisses with "don’t ask again"', async () => {
