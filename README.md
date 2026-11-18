@@ -15,18 +15,22 @@ spendfetti/
 ## Gereksinimler
 
 - Node.js 24 (`nvm use`)
-- MongoDB (yerel ya da Atlas)
+- MongoDB **gerekmez** — varsayılan `MONGODB_URI=memory` bellek içi bir MongoDB başlatır (veriler yeniden başlatınca silinir). Kalıcı veri için `server/.env` içinde yerel MongoDB ya da Atlas adresini verin.
 
 ## Kurulum
 
 ```bash
 nvm use
 npm install
-cp server/.env.example server/.env   # değerleri düzenle
+cp server/.env.example server/.env
 
-npm run dev:server   # http://localhost:4000
-npm run dev:client   # http://localhost:5173 (/api → 4000 proxy)
+npm run dev   # API + arayüz birlikte
 ```
+
+- Arayüz: http://localhost:5173 (`/api` istekleri 4000'e proxy'lenir)
+- API: http://localhost:4000/api/health
+
+Ayrı ayrı çalıştırmak için: `npm run dev:server`, `npm run dev:client`.
 
 ## Komutlar
 
