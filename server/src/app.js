@@ -4,7 +4,9 @@ import cookieParser from 'cookie-parser';
 import { env, isProduction } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import authRouter from './routes/auth.js';
+import categoriesRouter from './routes/categories.js';
 import healthRouter from './routes/health.js';
+import transactionsRouter from './routes/transactions.js';
 
 export function createApp() {
   const app = express();
@@ -19,6 +21,8 @@ export function createApp() {
 
   app.use('/api/health', healthRouter);
   app.use('/api/auth', authRouter);
+  app.use('/api/categories', categoriesRouter);
+  app.use('/api/transactions', transactionsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

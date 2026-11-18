@@ -48,7 +48,7 @@ To run them separately: `npm run dev:server`, `npm run dev:client`.
 - [x] T2 CI (GitHub Actions)
 - [x] T3 Database models
 - [x] T4 Auth API
-- [ ] T5 Transactions & categories API
+- [x] T5 Transactions & categories API
 - [ ] T6 Summary API
 - [ ] T7 API integration tests
 - [ ] T8 Frontend
