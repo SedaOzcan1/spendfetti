@@ -63,7 +63,7 @@ To load the demo account into a persistent database: `npm run seed:demo -w serve
 - [ ] T7 API integration tests
 - [x] T8 Frontend
 - [ ] T9 Deploy & README
-- [ ] T10 Fun budget API
+- [x] T10 Fun budget API
 - [ ] T11 Events API
 - [ ] T12 Fun budget prompt & Activities page
 - [ ] T13 Confetti effects
