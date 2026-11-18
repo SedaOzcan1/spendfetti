@@ -3,9 +3,9 @@ import { HttpError } from '../lib/httpError.js';
 import { amountSchema, monthSchema } from '../lib/schemas.js';
 import { FunBudget } from '../models/index.js';
 import {
+  availableSurplus,
   getFunBudgetStatus,
   getPromptDecision,
-  monthBalance,
 } from '../services/funBudgetService.js';
 import { toMonthKey } from '../utils/month.js';
 
@@ -52,11 +52,12 @@ export async function decideFunBudget(req, res) {
     return res.json(await getFunBudgetStatus(req.user._id, body.month));
   }
 
-  const balance = await monthBalance(req.user._id, body.month);
-  if (balance <= 0) throw HttpError.badRequest('This month has no surplus to set aside');
-  if (body.amount > balance) {
+  // The fun budget can use the surplus not already moved to savings
+  const available = await availableSurplus(req.user._id, body.month, { excludeFun: true });
+  if (available <= 0) throw HttpError.badRequest('This month has no surplus to set aside');
+  if (body.amount > available) {
     throw HttpError.badRequest('The fun budget cannot exceed what you saved this month', [
-      { path: 'amount', message: `Must be at most ${balance}` },
+      { path: 'amount', message: `Must be at most ${available}` },
     ]);
   }
 

@@ -59,6 +59,8 @@ describe('GET /api/fun-budget/prompt', () => {
       balance: 6000,
       ratio: 0.2,
       suggestedAmount: 1200,
+      savingsRatio: 0.5,
+      suggestedSavings: 3000,
     });
   });
 

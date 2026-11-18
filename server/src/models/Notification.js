@@ -6,6 +6,7 @@ export const NOTIFICATION_TYPES = [
   'budget_exceeded',
   'fun_budget_low',
   'month_close_reminder',
+  'savings_goal_reached',
 ];
 
 const RETENTION_SECONDS = 90 * 24 * 60 * 60;

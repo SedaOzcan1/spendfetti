@@ -1,5 +1,6 @@
 import { Category, FunBudget, FUN_CATEGORY_SLUG, Transaction } from '../models/index.js';
 import { monthRange, shiftMonth } from '../utils/month.js';
+import { monthCloseSavings } from './monthCloseSavings.js';
 
 const round2 = (value) => Math.round(value * 100) / 100;
 
@@ -31,12 +32,19 @@ export async function getPromptDecision(user, month) {
   else if (decision) reason = 'already_decided';
   else if (balance <= 0) reason = 'no_surplus';
 
+  const suggestedAmount = suggestAmount(balance, user.funBudgetRatio);
   return {
     show: reason === null,
     reason,
     balance,
     ratio: user.funBudgetRatio,
-    suggestedAmount: suggestAmount(balance, user.funBudgetRatio),
+    suggestedAmount,
+    savingsRatio: user.savingsRatio,
+    // Savings come out of what's left after the fun budget
+    suggestedSavings: Math.max(
+      Math.min(suggestAmount(balance, user.savingsRatio), Math.floor(balance - suggestedAmount)),
+      0,
+    ),
   };
 }
 
@@ -88,4 +96,14 @@ export async function getFunBudgetStatus(userId, month) {
     remaining: round2(Math.max(funBudget.amount - spent, 0)),
     window: { from: start, to: end },
   };
+}
+
+/** How much of a month's surplus is still free to set aside. */
+export async function availableSurplus(userId, month, { excludeFun = false } = {}) {
+  const [balance, saved, funBudget] = await Promise.all([
+    monthBalance(userId, month),
+    monthCloseSavings(userId, month),
+    excludeFun ? null : FunBudget.findOne({ userId, month, status: 'allocated' }),
+  ]);
+  return Math.round((balance - saved - (funBudget?.amount ?? 0)) * 100) / 100;
 }

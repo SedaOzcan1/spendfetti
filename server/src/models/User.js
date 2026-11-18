@@ -25,6 +25,8 @@ const userSchema = new Schema(
     currency: { type: String, default: 'TRY', uppercase: true, minlength: 3, maxlength: 3 },
     funBudgetPromptEnabled: { type: Boolean, default: true },
     funBudgetRatio: { type: Number, default: 0.2, min: 0, max: 1 },
+    // Share of a month's surplus suggested for savings & investments
+    savingsRatio: { type: Number, default: 0.5, min: 0, max: 1 },
     confettiEnabled: { type: Boolean, default: true },
     lastLoginAt: { type: Date },
     // Sessions issued before this moment are rejected

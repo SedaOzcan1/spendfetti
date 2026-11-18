@@ -37,6 +37,7 @@ export const updateMeSchema = z
     confettiEnabled: z.boolean(),
     funBudgetPromptEnabled: z.boolean(),
     funBudgetRatio: z.number().min(0.01).max(1),
+    savingsRatio: z.number().min(0).max(1),
   })
   .partial()
   .refine((body) => Object.keys(body).length > 0, 'At least one field is required');

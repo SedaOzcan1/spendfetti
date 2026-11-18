@@ -5,4 +5,6 @@ export { Budget } from './Budget.js';
 export { FunBudget } from './FunBudget.js';
 export { Event, EVENT_TYPES } from './Event.js';
 export { Notification, NOTIFICATION_TYPES } from './Notification.js';
+export { SavingsGoal, SAVINGS_KINDS } from './SavingsGoal.js';
+export { SavingsEntry, SAVINGS_ENTRY_TYPES } from './SavingsEntry.js';
 export * from './constants.js';

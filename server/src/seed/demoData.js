@@ -1,5 +1,13 @@
 import bcrypt from 'bcryptjs';
-import { Budget, Category, Notification, Transaction, User } from '../models/index.js';
+import {
+  Budget,
+  Category,
+  Notification,
+  SavingsEntry,
+  SavingsGoal,
+  Transaction,
+  User,
+} from '../models/index.js';
 import { shiftMonth, toMonthKey } from '../utils/month.js';
 import { checkBudgetAlerts, notifyWelcome } from '../services/notificationService.js';
 import { seedDefaultCategories } from './defaultCategories.js';
@@ -93,6 +101,8 @@ export async function seedDemoUser(now = new Date()) {
     Transaction.deleteMany({ userId: user._id }),
     Budget.deleteMany({ userId: user._id }),
     Notification.deleteMany({ userId: user._id }),
+    SavingsGoal.deleteMany({ userId: user._id }),
+    SavingsEntry.deleteMany({ userId: user._id }),
   ]);
 
   const month = toMonthKey(now);
@@ -120,6 +130,35 @@ export async function seedDemoUser(now = new Date()) {
       categoryId: categoryId[slug],
       limit,
     })),
+  );
+
+  // Savings: steady monthly contributions over the previous five months
+  const [emergency, index] = await SavingsGoal.insertMany([
+    { userId: user._id, name: 'Emergency fund', kind: 'savings', targetAmount: 60000 },
+    {
+      userId: user._id,
+      name: 'Index fund',
+      kind: 'investment',
+      targetAmount: 100000,
+      targetDate: new Date(`${shiftMonth(month, 13)}-01T00:00:00Z`),
+    },
+  ]);
+  await SavingsEntry.insertMany(
+    PREVIOUS_MONTHS.flatMap((_, i) => {
+      const entryMonth = shiftMonth(month, i - PREVIOUS_MONTHS.length);
+      return [
+        [emergency, 3600],
+        [index, 4800],
+      ].map(([goal, amount]) => ({
+        userId: user._id,
+        goalId: goal._id,
+        type: 'deposit',
+        amount,
+        date: dateIn(entryMonth, 28),
+        source: 'manual',
+        note: 'Monthly transfer',
+      }));
+    }),
   );
 
   await notifyWelcome(user._id);
