@@ -47,7 +47,7 @@ To run them separately: `npm run dev:server`, `npm run dev:client`.
 - [x] T1 Monorepo scaffold
 - [x] T2 CI (GitHub Actions)
 - [x] T3 Database models
-- [ ] T4 Auth API
+- [x] T4 Auth API
 - [ ] T5 Transactions & categories API
 - [ ] T6 Summary API
 - [ ] T7 API integration tests
