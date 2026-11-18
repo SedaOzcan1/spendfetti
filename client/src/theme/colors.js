@@ -1,4 +1,4 @@
-// Tek kaynak: marka renkleri (konfeti efektleri de buradan okur)
+// Single source of truth for brand colors (confetti effects read from here too)
 export const colors = {
   primary: '#7c3aed',
   accent: '#f59e0b',

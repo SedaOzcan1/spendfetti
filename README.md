@@ -1,10 +1,10 @@
 # Spendfetti 🎉
 
-> **spend + confetti** — Harcamalarını takip et, artan paranı kutla ve eğlenceye dönüştür.
+> **spend + confetti** — Track your spending, celebrate what you save, and turn it into fun.
 
-Node.js + Express + MongoDB API ve React + Vite istemcisinden oluşan full stack harcama takip uygulaması.
+A full stack expense tracker: a Node.js + Express + MongoDB API and a React + Vite client.
 
-## Yapı
+## Structure
 
 ```
 spendfetti/
@@ -12,47 +12,48 @@ spendfetti/
 └── client/   # React + Vite, TanStack Query, Tailwind, Chart.js, canvas-confetti
 ```
 
-## Gereksinimler
+## Requirements
 
 - Node.js 24 (`nvm use`)
-- MongoDB **gerekmez** — varsayılan `MONGODB_URI=memory` bellek içi bir MongoDB başlatır (veriler yeniden başlatınca silinir). Kalıcı veri için `server/.env` içinde yerel MongoDB ya da Atlas adresini verin.
+- MongoDB is **optional** — the default `MONGODB_URI=memory` starts an in-memory MongoDB (data is wiped on restart). For persistent data, set a local MongoDB or Atlas connection string in `server/.env`.
 
-## Kurulum
+## Getting started
 
 ```bash
 nvm use
 npm install
 cp server/.env.example server/.env
 
-npm run dev   # API + arayüz birlikte
+npm run dev   # API + client together
 ```
 
-- Arayüz: http://localhost:5173 (`/api` istekleri 4000'e proxy'lenir)
+- Client: http://localhost:5173 (`/api` requests are proxied to port 4000)
 - API: http://localhost:4000/api/health
 
-Ayrı ayrı çalıştırmak için: `npm run dev:server`, `npm run dev:client`.
+To run them separately: `npm run dev:server`, `npm run dev:client`.
 
-## Komutlar
+## Scripts
 
-| Komut            | Açıklama                          |
-| ---------------- | --------------------------------- |
-| `npm run lint`   | ESLint (tüm repo)                 |
-| `npm run format` | Prettier                          |
-| `npm test`       | Server + client testleri (Vitest) |
-| `npm run build`  | Client production build           |
+| Script           | Description                    |
+| ---------------- | ------------------------------ |
+| `npm run dev`    | Start API + client together    |
+| `npm run lint`   | ESLint (whole repo)            |
+| `npm run format` | Prettier                       |
+| `npm test`       | Server + client tests (Vitest) |
+| `npm run build`  | Client production build        |
 
-## Yol haritası
+## Roadmap
 
-- [x] T1 Monorepo iskeleti
+- [x] T1 Monorepo scaffold
 - [x] T2 CI (GitHub Actions)
-- [ ] T3 Veritabanı modelleri
+- [ ] T3 Database models
 - [ ] T4 Auth API
-- [ ] T5 İşlem ve kategori API'si
-- [ ] T6 Özet API'si
-- [ ] T7 API testleri
+- [ ] T5 Transactions & categories API
+- [ ] T6 Summary API
+- [ ] T7 API integration tests
 - [ ] T8 Frontend
-- [ ] T9 Deploy ve README
-- [ ] T10 Eğlence bütçesi API'si
-- [ ] T11 Etkinlik API'si
-- [ ] T12 Popup ve Aktiviteler ekranı
-- [ ] T13 Konfeti efektleri
+- [ ] T9 Deploy & README
+- [ ] T10 Fun budget API
+- [ ] T11 Events API
+- [ ] T12 Fun budget prompt & Activities page
+- [ ] T13 Confetti effects

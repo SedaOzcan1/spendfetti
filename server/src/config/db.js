@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 let memoryServer;
 
 /**
- * MONGODB_URI=memory → geliştirme için bellek içi MongoDB (kurulum gerekmez, veri kalıcı değil).
- * Aksi halde verilen URI'ye (yerel MongoDB / Atlas) bağlanır.
+ * MONGODB_URI=memory → in-memory MongoDB for development (no install needed, data is not persisted).
+ * Otherwise connects to the given URI (local MongoDB / Atlas).
  */
 export async function connectDb(uri) {
   mongoose.set('strictQuery', true);
@@ -14,7 +14,7 @@ export async function connectDb(uri) {
     const { MongoMemoryServer } = await import('mongodb-memory-server');
     memoryServer = await MongoMemoryServer.create();
     target = memoryServer.getUri('spendfetti');
-    console.log('🧠 Bellek içi MongoDB kullanılıyor (veriler yeniden başlatınca silinir)');
+    console.log('🧠 Using in-memory MongoDB (data is wiped on restart)');
   }
 
   await mongoose.connect(target, { serverSelectionTimeoutMS: 5000 });
