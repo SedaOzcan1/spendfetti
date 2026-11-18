@@ -27,7 +27,7 @@ export async function upsertBudget(req, res) {
   const budget = await Budget.findOneAndUpdate(
     { userId: req.user._id, categoryId },
     { $set: req.validated.body },
-    { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true },
+    { upsert: true, returnDocument: 'after', runValidators: true, setDefaultsOnInsert: true },
   );
   res.json({ budget });
 }

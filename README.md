@@ -65,5 +65,5 @@ To load the demo account into a persistent database: `npm run seed:demo -w serve
 - [ ] T9 Deploy & README
 - [x] T10 Fun budget API
 - [x] T11 Events API
-- [ ] T12 Fun budget prompt & Activities page
+- [x] T12 Fun budget prompt & Activities page
 - [ ] T13 Confetti effects

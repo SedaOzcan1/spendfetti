@@ -1,10 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useMe } from '../api/auth.js';
 import { useSummary } from '../api/summary.js';
 import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { PageError, PageLoading } from '../components/ui/PageState.jsx';
 import { BudgetOverview } from '../features/dashboard/BudgetOverview.jsx';
 import { FunBudgetCard } from '../features/dashboard/FunBudgetCard.jsx';
+import { FunBudgetPromptModal } from '../features/funBudget/FunBudgetPromptModal.jsx';
 import { RecentTransactions } from '../features/dashboard/RecentTransactions.jsx';
 import { SpendingInsights } from '../features/dashboard/SpendingInsights.jsx';
 import { SummaryStats } from '../features/dashboard/SummaryStats.jsx';
@@ -14,7 +15,7 @@ import { useMonth } from '../lib/MonthContext.jsx';
 export default function DashboardPage() {
   const { data: user } = useMe();
   const { month } = useMonth();
-  const navigate = useNavigate();
+  const [promptOpen, setPromptOpen] = useState(false);
   const summary = useSummary(month);
   const firstName = user?.name.split(' ')[0];
 
@@ -33,7 +34,11 @@ export default function DashboardPage() {
           <SummaryStats summary={summary.data} />
           <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
             <SpendingInsights summary={summary.data} />
-            <FunBudgetCard summary={summary.data} onCloseMonth={() => navigate('/activities')} />
+            <FunBudgetCard
+              summary={summary.data}
+              month={month}
+              onCloseMonth={() => setPromptOpen(true)}
+            />
           </div>
           <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
             <RecentTransactions month={month} />
@@ -41,6 +46,8 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      <FunBudgetPromptModal open={promptOpen} month={month} onClose={() => setPromptOpen(false)} />
     </>
   );
 }

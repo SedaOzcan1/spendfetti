@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-export function Modal({ open, onClose, title, subtitle, children, className = '' }) {
+export function Modal({ open, onClose, title, subtitle, children, className = '', ariaLabel }) {
   const titleId = useId();
   const panelRef = useRef(null);
 
@@ -50,6 +50,7 @@ export function Modal({ open, onClose, title, subtitle, children, className = ''
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? titleId : undefined}
+        aria-label={title ? undefined : ariaLabel}
         className={`relative max-h-[95vh] w-full overflow-y-auto rounded-t-3xl bg-white p-6 shadow-xl sm:max-w-xl sm:rounded-3xl sm:p-8 ${className}`}
       >
         <button

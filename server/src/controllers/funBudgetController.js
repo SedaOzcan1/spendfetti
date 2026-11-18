@@ -66,7 +66,7 @@ export async function decideFunBudget(req, res) {
       $set: { status: 'allocated', amount: body.amount },
       $setOnInsert: { allocatedAt: new Date() },
     },
-    { upsert: true, new: true },
+    { upsert: true, returnDocument: 'after' },
   );
   // A previously dismissed month gets its allocation date when first allocated
   await FunBudget.updateOne(

@@ -85,7 +85,7 @@ export async function seedDemoUser(now = new Date()) {
       $set: { name: DEMO_USER.name, city: DEMO_USER.city, passwordHash },
       $setOnInsert: { email: DEMO_USER.email },
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
+    { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
   );
 
   await Promise.all([

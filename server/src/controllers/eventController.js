@@ -71,7 +71,7 @@ export async function trackClick(req, res) {
   const event = await Event.findByIdAndUpdate(
     req.validated.params.id,
     { $inc: { clicks: 1 } },
-    { new: true },
+    { returnDocument: 'after' },
   );
   if (!event) throw HttpError.notFound('Event not found');
   res.json({ url: event.url });

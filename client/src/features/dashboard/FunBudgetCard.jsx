@@ -1,4 +1,6 @@
 import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useFunBudget } from '../../api/funBudget.js';
 import { Card } from '../../components/ui/Card.jsx';
 import { formatMoney, formatPercent } from '../../lib/format.js';
 
@@ -12,9 +14,33 @@ function ConfettiAccent() {
   );
 }
 
-export function FunBudgetCard({ summary, onCloseMonth }) {
+const actionClass =
+  'mt-8 flex h-14 items-center justify-between rounded-xl bg-mint-strong px-6 font-semibold text-forest transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 xl:mt-auto';
+
+export function FunBudgetCard({ summary, month, onCloseMonth }) {
   const { funBudget, totals } = summary;
   const hasSurplus = totals.balance > 0;
+  const { data: allocation } = useFunBudget(month);
+
+  if (allocation?.status === 'allocated') {
+    return (
+      <Card tone="forest" className="relative flex flex-col p-6 sm:p-8">
+        <ConfettiAccent />
+        <p className="text-xs font-semibold tracking-[0.12em] text-white/80">SET ASIDE FOR YOU</p>
+        <h2 className="mt-4 text-2xl font-medium sm:text-[28px]">Good moments are funded.</h2>
+        <p className="mt-6 text-5xl font-bold tracking-tight text-mint-strong tabular-nums">
+          {formatMoney(allocation.remaining, { decimals: 0 })}
+        </p>
+        <p className="mt-5 leading-relaxed text-white/80">
+          left of the {formatMoney(allocation.allocated, { decimals: 0 })} you set aside. Find
+          something fun that fits.
+        </p>
+        <Link to="/activities" className={actionClass}>
+          Explore activities <ArrowRight className="size-5" aria-hidden="true" />
+        </Link>
+      </Card>
+    );
+  }
 
   return (
     <Card tone="forest" className="relative flex flex-col p-6 sm:p-8">
@@ -45,12 +71,7 @@ export function FunBudgetCard({ summary, onCloseMonth }) {
         </p>
       )}
 
-      <button
-        type="button"
-        onClick={onCloseMonth}
-        disabled={!hasSurplus}
-        className="mt-8 flex h-14 items-center justify-between rounded-xl bg-mint-strong px-6 font-semibold text-forest transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 xl:mt-auto"
-      >
+      <button type="button" onClick={onCloseMonth} disabled={!hasSurplus} className={actionClass}>
         Close the month <ArrowRight className="size-5" aria-hidden="true" />
       </button>
     </Card>
