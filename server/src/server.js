@@ -3,10 +3,13 @@ import { connectDb } from './config/db.js';
 import { env } from './config/env.js';
 import { seedDefaultCategories } from './seed/defaultCategories.js';
 import { DEMO_USER, seedDemoUser } from './seed/demoData.js';
+import { seedEventsIfNeeded } from './seed/sampleEvents.js';
 
 async function main() {
   await connectDb(env.MONGODB_URI);
   await seedDefaultCategories();
+  const seededEvents = await seedEventsIfNeeded();
+  if (seededEvents) console.log(`🎟️  Seeded ${seededEvents} sample events`);
   if (env.SEED_DEMO) {
     await seedDemoUser();
     console.log(`🧪 Demo account: ${DEMO_USER.email} / ${DEMO_USER.password}`);

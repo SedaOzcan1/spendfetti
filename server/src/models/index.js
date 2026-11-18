@@ -3,4 +3,5 @@ export { Category } from './Category.js';
 export { Transaction } from './Transaction.js';
 export { Budget } from './Budget.js';
 export { FunBudget } from './FunBudget.js';
+export { Event, EVENT_TYPES } from './Event.js';
 export * from './constants.js';
