@@ -1,5 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/apiClient.js';
+import { invalidateFunBudget } from './funBudget.js';
 
 export function useSavings(month) {
   return useQuery({
@@ -24,7 +25,9 @@ function useSavingsMutation(mutationFn, extraKeys = []) {
     onSuccess: () =>
       Promise.all(
         ['savings', 'notifications', ...extraKeys].map((key) =>
-          queryClient.invalidateQueries({ queryKey: [key] }),
+          key === 'fun-budget'
+            ? invalidateFunBudget(queryClient)
+            : queryClient.invalidateQueries({ queryKey: [key] }),
         ),
       ),
   });

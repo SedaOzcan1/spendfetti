@@ -69,6 +69,51 @@ describe('FunBudgetPromptModal', () => {
     });
   });
 
+  // Regression: the server reports show:false once the month is closed. The
+  // prompt must not refetch mid-submit, or the form unmounts before navigating.
+  it('navigates even though the closed month no longer shows a prompt', async () => {
+    let closed = false;
+    mockApi({
+      'GET /api/fun-budget/prompt': () => [
+        200,
+        closed ? { ...prompt, show: false, reason: 'already_decided' } : prompt,
+      ],
+      // Other refreshes after closing are slower, as in a real browser
+      'GET /api/savings': () =>
+        closed
+          ? new Promise((resolve) => setTimeout(() => resolve([200, savings]), 80))
+          : [200, savings],
+      'POST /api/savings/month-close': () => {
+        closed = true;
+        return [201, { goalsReached: [] }];
+      },
+    });
+    const { user, onClose } = setup();
+    await screen.findByLabelText('Savings & investments');
+    await user.click(screen.getByRole('button', { name: /Set it aside and explore/ }));
+
+    expect(await screen.findByText('Activities page')).toBeInTheDocument();
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('closes after "Not now" even though the prompt would no longer show', async () => {
+    let dismissed = false;
+    mockApi({
+      'GET /api/fun-budget/prompt': () => [
+        200,
+        dismissed ? { ...prompt, show: false, reason: 'already_decided' } : prompt,
+      ],
+      'GET /api/savings': [200, savings],
+      'POST /api/fun-budget': () => {
+        dismissed = true;
+        return [200, { status: 'dismissed' }];
+      },
+    });
+    const { user, onClose } = setup();
+    await user.click(await screen.findByRole('button', { name: 'Not now' }));
+    await vi.waitFor(() => expect(onClose).toHaveBeenCalled());
+  });
+
   it('goes to savings when nothing is set aside for fun', async () => {
     mockApi({
       'GET /api/fun-budget/prompt': [200, prompt],

@@ -31,11 +31,12 @@ export function mockApi(routes) {
     const key = `${options.method ?? 'GET'} ${pathname}`;
     const handler = routes[key];
     if (!handler) return json(404, { error: `No mock for ${key}` });
-    const [status, body] =
+    // Handlers may return [status, body] or a Promise of it (to simulate latency)
+    const result =
       typeof handler === 'function'
         ? handler({ url, body: options.body && JSON.parse(options.body) })
         : handler;
-    return json(status, body);
+    return Promise.resolve(result).then(([status, body]) => json(status, body));
   });
   vi.stubGlobal('fetch', fetchMock);
   return fetchMock;
