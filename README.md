@@ -9,7 +9,9 @@ A full stack expense tracker: a Node.js + Express + MongoDB API and a React + Vi
 - **Transactions** — income and expenses with categories, search, filters, sorting and CSV export
 - **Overview** — monthly totals, 6-month trend, spending by category (Chart.js)
 - **Budgets** — monthly limits per category with warnings near the limit
-- **Fun budget** — close a month with a surplus and set part of it aside for fun
+- **Savings & investments** — goals with targets and dates, deposits / withdrawals (not
+  counted as spending), monthly amount needed to stay on track
+- **Month close** — split a month's surplus between a fun budget and your savings goals
 - **Activities** — browse events that fit your remaining fun budget (city, date, type, price)
 - **Notifications** — budget warnings, fun budget running low, month-close reminders
 - **Account** — cookie-based sessions, remember me, forgot / reset password by email,

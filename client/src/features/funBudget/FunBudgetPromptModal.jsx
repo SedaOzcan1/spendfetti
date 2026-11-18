@@ -3,10 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useMarkAchievementsSeen } from '../../api/achievements.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDecideFunBudget, useFunBudgetPrompt } from '../../api/funBudget.js';
+import { useCloseMonth, useSavings } from '../../api/savings.js';
 import { Button } from '../../components/ui/Button.jsx';
-import { Field } from '../../components/ui/Field.jsx';
+import { Field, SelectInput } from '../../components/ui/Field.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
-import { ApiError } from '../../lib/apiClient.js';
 import { formatMoney, formatPercent } from '../../lib/format.js';
 import { formatMonth } from '../../lib/month.js';
 import { useConfetti } from '../celebrations/CelebrationProvider.jsx';
@@ -39,24 +39,68 @@ const REASON_COPY = {
   no_surplus: 'This month didn’t end with a surplus, so there’s nothing to set aside. Next month!',
 };
 
+function MoneyInput({ label, value, onChange, hint, error, max }) {
+  return (
+    <Field label={label} hint={hint} error={error}>
+      {(a11y) => (
+        <div className="flex h-14 items-center rounded-lg border border-line bg-white px-4 focus-within:border-sage">
+          <span className="text-xl font-bold text-ink" aria-hidden="true">
+            ₺
+          </span>
+          <input
+            {...a11y}
+            type="number"
+            min="0"
+            max={max}
+            step="1"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full bg-transparent pl-1 text-xl font-bold text-ink tabular-nums focus:outline-none"
+          />
+        </div>
+      )}
+    </Field>
+  );
+}
+
 function PromptBody({ prompt, month, onClose }) {
   const navigate = useNavigate();
   const decide = useDecideFunBudget();
+  const close = useCloseMonth();
   const { celebrate } = useConfetti();
-  const [amount, setAmount] = useState(String(prompt.suggestedAmount));
+  const { data: savings } = useSavings(month);
+  const goals = (savings?.goals ?? []).filter((goal) => !goal.achievedAt);
+
+  const [funAmount, setFunAmount] = useState(String(prompt.suggestedAmount));
+  const [saveAmount, setSaveAmount] = useState(String(prompt.suggestedSavings));
+  const [goalId, setGoalId] = useState('');
   const [neverAsk, setNeverAsk] = useState(false);
-  const fieldErrors = decide.error instanceof ApiError ? decide.error.fieldErrors : {};
   const monthName = formatMonth(month).split(' ')[0];
 
-  const allocate = (event) => {
+  const selectedGoal = goalId || goals[0]?.id || '';
+  const fun = Number(funAmount) || 0;
+  const saved = selectedGoal ? Number(saveAmount) || 0 : 0;
+  const leftover = Math.round((prompt.balance - fun - saved) * 100) / 100;
+  const error = close.error ?? decide.error;
+
+  const submit = (event) => {
     event.preventDefault();
-    decide.mutate(
-      { month, amount: Number(amount) },
+    close.mutate(
       {
-        onSuccess: () => {
-          celebrate({ preset: 'cannons', message: 'Fun budget set aside. Enjoy!' });
+        month,
+        funAmount: fun,
+        savings: saved > 0 ? [{ goalId: selectedGoal, amount: saved }] : [],
+      },
+      {
+        onSuccess: ({ goalsReached }) => {
+          celebrate({
+            preset: goalsReached.length ? 'rain' : 'cannons',
+            message: goalsReached.length
+              ? 'Goal reached! What a way to close the month.'
+              : 'Set aside. Your future self says thanks!',
+          });
           onClose();
-          navigate('/activities');
+          navigate(fun > 0 ? '/activities' : '/savings');
         },
       },
     );
@@ -69,7 +113,7 @@ function PromptBody({ prompt, month, onClose }) {
     );
 
   return (
-    <form onSubmit={allocate} className="text-center">
+    <form onSubmit={submit} className="text-center">
       <ConfettiDecor />
       <span className="mx-auto grid size-20 place-items-center rounded-full bg-mint text-sage">
         <Check className="size-7" aria-hidden="true" />
@@ -80,44 +124,77 @@ function PromptBody({ prompt, month, onClose }) {
       <h2 id="fun-budget-title" className="mt-3 text-3xl font-bold tracking-tight text-ink">
         You saved {formatMoney(prompt.balance, { decimals: 0 })} this month!
       </h2>
-      <p className="mt-3 text-muted">How about turning some of it into new memories?</p>
+      <p className="mt-3 text-muted">How about sharing it between fun and your future?</p>
 
-      <div className="mt-8 rounded-2xl bg-mint/70 p-5 text-left">
-        <Field
-          label="Fun & activities budget"
-          error={fieldErrors.amount}
-          hint={`${formatPercent(prompt.ratio)} of your balance · You can change the amount.`}
-        >
-          {(a11y) => (
-            <div className="flex h-16 items-center rounded-lg border border-line bg-white px-5 focus-within:border-sage">
-              <span className="text-2xl font-bold text-ink" aria-hidden="true">
-                ₺
-              </span>
-              <input
-                {...a11y}
-                type="number"
-                min="1"
+      <div className="mt-8 space-y-4 text-left">
+        <div className="rounded-2xl bg-mint/70 p-5">
+          <MoneyInput
+            label="Fun & activities budget"
+            value={funAmount}
+            onChange={setFunAmount}
+            max={prompt.balance}
+            hint={`Suggested: ${formatPercent(prompt.ratio)} of your balance`}
+          />
+        </div>
+
+        <div className="rounded-2xl bg-lavender-light/70 p-5">
+          {goals.length > 0 ? (
+            <div className="grid gap-4 sm:grid-cols-[1fr_1.2fr]">
+              <MoneyInput
+                label="Savings & investments"
+                value={saveAmount}
+                onChange={setSaveAmount}
                 max={prompt.balance}
-                step="1"
-                required
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full bg-transparent pl-1 text-2xl font-bold text-ink tabular-nums focus:outline-none"
+                hint={`Suggested: ${formatPercent(prompt.savingsRatio)}`}
               />
+              <SelectInput
+                label="Into goal"
+                value={selectedGoal}
+                onChange={(e) => setGoalId(e.target.value)}
+              >
+                {goals.map((goal) => (
+                  <option key={goal.id} value={goal.id}>
+                    {goal.name}
+                  </option>
+                ))}
+              </SelectInput>
             </div>
+          ) : (
+            <p className="text-sm text-ink/80">
+              <span className="font-medium text-ink">Savings & investments</span> — create a goal to
+              send part of your surplus there.{' '}
+              <Link to="/savings" onClick={onClose} className="font-semibold text-sage underline">
+                Create a goal
+              </Link>
+            </p>
           )}
-        </Field>
+        </div>
+
+        <p
+          className={`px-1 text-sm ${leftover < 0 ? 'font-medium text-coral' : 'text-muted'}`}
+          aria-live="polite"
+        >
+          {leftover < 0
+            ? `That’s ${formatMoney(-leftover, { decimals: 0 })} more than you saved.`
+            : `${formatMoney(leftover, { decimals: 0 })} stays in your account.`}
+        </p>
       </div>
 
-      {decide.error && !Object.keys(fieldErrors).length && (
+      {error && (
         <p role="alert" className="mt-4 rounded-lg bg-blush px-4 py-3 text-sm text-coral">
-          {decide.error.message}
+          {error.message}
         </p>
       )}
 
-      <div className="mt-8 space-y-3">
-        <Button type="submit" size="lg" className="w-full" isLoading={decide.isPending}>
-          Yes, set it aside and explore activities
+      <div className="mt-6 space-y-3">
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full"
+          isLoading={close.isPending}
+          disabled={leftover < 0 || fun + saved <= 0}
+        >
+          {fun > 0 ? 'Set it aside and explore activities' : 'Save it'}
         </Button>
         <Button variant="secondary" size="lg" className="w-full" onClick={dismiss}>
           Not now

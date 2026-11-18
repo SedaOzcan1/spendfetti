@@ -14,6 +14,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage.jsx'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage.jsx'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage.jsx'));
+const SavingsPage = lazy(() => import('./pages/SavingsPage.jsx'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage.jsx'));
 const TransactionsPage = lazy(() => import('./pages/TransactionsPage.jsx'));
 
@@ -35,6 +36,7 @@ export default function App() {
               <Route index element={<DashboardPage />} />
               <Route path="/transactions" element={<TransactionsPage />} />
               <Route path="/budgets" element={<BudgetsPage />} />
+              <Route path="/savings" element={<SavingsPage />} />
               <Route path="/activities" element={<ActivitiesPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>

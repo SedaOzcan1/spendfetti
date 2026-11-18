@@ -17,6 +17,30 @@ const CURRENCIES = [
   { code: 'GBP', label: 'British pound · GBP' },
 ];
 
+function PercentInput({ label, value, onChange, error, min }) {
+  return (
+    <Field label={label} error={error}>
+      {(a11y) => (
+        <div className="flex h-12 items-center rounded-lg border border-line bg-white px-4 focus-within:border-sage">
+          <input
+            {...a11y}
+            type="number"
+            min={min}
+            max="100"
+            required
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full bg-transparent text-[15px] text-ink focus:outline-none"
+          />
+          <span className="text-muted" aria-hidden="true">
+            %
+          </span>
+        </div>
+      )}
+    </Field>
+  );
+}
+
 function formatLastLogin(value) {
   if (!value) return 'Not available';
   const date = new Date(value);
@@ -42,6 +66,7 @@ function SettingsForm({ user }) {
     confettiEnabled: user.confettiEnabled,
     funBudgetPromptEnabled: user.funBudgetPromptEnabled,
     ratioPercent: String(Math.round(user.funBudgetRatio * 100)),
+    savingsPercent: String(Math.round((user.savingsRatio ?? 0.5) * 100)),
   });
   const fieldErrors = update.error instanceof ApiError ? update.error.fieldErrors : {};
   const set = (key) => (value) => {
@@ -51,9 +76,13 @@ function SettingsForm({ user }) {
 
   const submit = (event) => {
     event.preventDefault();
-    const { ratioPercent, ...rest } = form;
+    const { ratioPercent, savingsPercent, ...rest } = form;
     update.mutate(
-      { ...rest, funBudgetRatio: Number(ratioPercent) / 100 },
+      {
+        ...rest,
+        funBudgetRatio: Number(ratioPercent) / 100,
+        savingsRatio: Number(savingsPercent) / 100,
+      },
       { onSuccess: () => setNotice('Changes saved.') },
     );
   };
@@ -138,34 +167,25 @@ function SettingsForm({ user }) {
                 />
               </div>
             </div>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-8">
-              <Field
-                label="Suggested budget ratio"
+            <div className="mt-8 grid gap-6 sm:grid-cols-2">
+              <PercentInput
+                label="Suggested fun budget"
+                value={form.ratioPercent}
+                onChange={set('ratioPercent')}
                 error={fieldErrors.funBudgetRatio}
-                className="sm:w-52"
-              >
-                {(a11y) => (
-                  <div className="flex h-12 items-center rounded-lg border border-line bg-white px-4 focus-within:border-sage">
-                    <input
-                      {...a11y}
-                      type="number"
-                      min="1"
-                      max="100"
-                      required
-                      value={form.ratioPercent}
-                      onChange={(e) => set('ratioPercent')(e.target.value)}
-                      className="w-full bg-transparent text-[15px] text-ink focus:outline-none"
-                    />
-                    <span className="text-muted" aria-hidden="true">
-                      %
-                    </span>
-                  </div>
-                )}
-              </Field>
-              <p className="pb-3 text-sm text-muted">
-                Only suggested in months with a positive balance.
-              </p>
+                min="1"
+              />
+              <PercentInput
+                label="Suggested savings & investments"
+                value={form.savingsPercent}
+                onChange={set('savingsPercent')}
+                error={fieldErrors.savingsRatio}
+                min="0"
+              />
             </div>
+            <p className="mt-3 text-sm text-muted">
+              Shares of a month’s surplus, suggested only in months with a positive balance.
+            </p>
           </Card>
 
           {update.error && !Object.keys(fieldErrors).length && (

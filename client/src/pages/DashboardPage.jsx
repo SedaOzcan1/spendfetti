@@ -9,6 +9,7 @@ import { FunBudgetCard } from '../features/dashboard/FunBudgetCard.jsx';
 import { useAchievementCelebrations } from '../features/celebrations/useAchievementCelebrations.js';
 import { FunBudgetPromptModal } from '../features/funBudget/FunBudgetPromptModal.jsx';
 import { RecentTransactions } from '../features/dashboard/RecentTransactions.jsx';
+import { SavingsSnapshot } from '../features/dashboard/SavingsSnapshot.jsx';
 import { SpendingInsights } from '../features/dashboard/SpendingInsights.jsx';
 import { SummaryStats } from '../features/dashboard/SummaryStats.jsx';
 import { AddTransactionButton } from '../features/transactions/AddTransactionButton.jsx';
@@ -60,6 +61,7 @@ export default function DashboardPage() {
             <RecentTransactions month={month} />
             <BudgetOverview budgets={summary.data.budgets} monthClosed={summary.data.monthClosed} />
           </div>
+          <SavingsSnapshot month={month} />
         </div>
       )}
 
