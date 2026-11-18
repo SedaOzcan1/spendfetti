@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useRegister } from '../api/auth.js';
 import { Button } from '../components/ui/Button.jsx';
 import { TextInput } from '../components/ui/Field.jsx';
@@ -71,7 +71,17 @@ export default function RegisterPage() {
             onChange={(e) => setAcceptedTerms(e.target.checked)}
             className="mt-0.5 size-5 rounded border-line accent-sage"
           />
-          I accept the terms of use and privacy policy.
+          <span>
+            I accept the{' '}
+            <Link to="/terms" target="_blank" className="font-medium text-sage underline">
+              terms of use
+            </Link>{' '}
+            and{' '}
+            <Link to="/privacy" target="_blank" className="font-medium text-sage underline">
+              privacy policy
+            </Link>
+            .
+          </span>
         </label>
 
         {register.error && !Object.keys(fieldErrors).length && (

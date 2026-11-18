@@ -11,6 +11,9 @@ A full stack expense tracker: a Node.js + Express + MongoDB API and a React + Vi
 - **Budgets** — monthly limits per category with warnings near the limit
 - **Fun budget** — close a month with a surplus and set part of it aside for fun
 - **Activities** — browse events that fit your remaining fun budget (city, date, type, price)
+- **Notifications** — budget warnings, fun budget running low, month-close reminders
+- **Account** — cookie-based sessions, remember me, forgot / reset password by email,
+  password change signs out other devices
 - **Confetti** 🎉 — short celebrations for wins (surplus month, budgets met, first transaction);
   respects `prefers-reduced-motion` and can be turned off in Settings
 
@@ -51,6 +54,9 @@ npm run dev   # API + client together
 
 To run them separately: `npm run dev:server`, `npm run dev:client`.
 To load the demo account into a persistent database: `npm run seed:demo -w server`.
+
+Password reset emails are sent via SMTP when `SMTP_URL` is set in `server/.env`;
+otherwise the reset link is printed in the API console.
 
 ## Scripts
 

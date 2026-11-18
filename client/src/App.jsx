@@ -8,9 +8,12 @@ import { MonthProvider } from './lib/MonthContext.jsx';
 const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage.jsx'));
 const BudgetsPage = lazy(() => import('./pages/BudgetsPage.jsx'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage.jsx'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage.jsx'));
+const LegalPage = lazy(() => import('./pages/LegalPage.jsx'));
 const LoginPage = lazy(() => import('./pages/LoginPage.jsx'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage.jsx'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage.jsx'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage.jsx'));
 const TransactionsPage = lazy(() => import('./pages/TransactionsPage.jsx'));
 
@@ -22,7 +25,11 @@ export default function App() {
           <Route element={<GuestOnly />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           </Route>
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/terms" element={<LegalPage kind="terms" />} />
+          <Route path="/privacy" element={<LegalPage kind="privacy" />} />
           <Route element={<RequireAuth />}>
             <Route element={<AppLayout />}>
               <Route index element={<DashboardPage />} />

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLogin } from '../api/auth.js';
 import { Button } from '../components/ui/Button.jsx';
 import { TextInput } from '../components/ui/Field.jsx';
@@ -39,15 +39,20 @@ export default function LoginPage() {
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
-        <label className="flex items-center gap-3 text-sm text-muted">
-          <input
-            type="checkbox"
-            checked={form.remember}
-            onChange={(e) => setForm({ ...form, remember: e.target.checked })}
-            className="size-5 rounded border-line accent-sage"
-          />
-          Remember me
-        </label>
+        <div className="flex items-center justify-between gap-4">
+          <label className="flex items-center gap-3 text-sm text-muted">
+            <input
+              type="checkbox"
+              checked={form.remember}
+              onChange={(e) => setForm({ ...form, remember: e.target.checked })}
+              className="size-5 rounded border-line accent-sage"
+            />
+            Remember me
+          </label>
+          <Link to="/forgot-password" className="text-sm font-medium text-sage hover:underline">
+            Forgot password?
+          </Link>
+        </div>
 
         {login.error && (
           <p role="alert" className="rounded-lg bg-blush px-4 py-3 text-sm text-coral">
