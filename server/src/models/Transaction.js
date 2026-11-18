@@ -8,6 +8,7 @@ const transactionSchema = new Schema(
     amount: { type: Number, required: true, min: 0.01, max: 1_000_000_000 },
     categoryId: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
     date: { type: Date, required: true },
+    title: { type: String, required: true, trim: true, maxlength: 80 },
     note: { type: String, trim: true, maxlength: 500 },
   },
   {

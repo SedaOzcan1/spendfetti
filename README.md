@@ -49,7 +49,7 @@ To run them separately: `npm run dev:server`, `npm run dev:client`.
 - [x] T3 Database models
 - [x] T4 Auth API
 - [x] T5 Transactions & categories API
-- [ ] T6 Summary API
+- [x] T6 Summary & budgets API
 - [ ] T7 API integration tests
 - [ ] T8 Frontend
 - [ ] T9 Deploy & README

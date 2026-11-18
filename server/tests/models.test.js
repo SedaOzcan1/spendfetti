@@ -76,7 +76,7 @@ describe('Transaction', () => {
   it('requires a positive amount and a valid type', async () => {
     const user = await createUser();
     const category = await Category.create({ userId: user._id, name: 'Pets', type: 'expense' });
-    const base = { userId: user._id, categoryId: category._id, date: new Date() };
+    const base = { userId: user._id, categoryId: category._id, date: new Date(), title: 'Vet' };
 
     await expect(Transaction.create({ ...base, type: 'expense', amount: 0 })).rejects.toThrow(
       /amount/,

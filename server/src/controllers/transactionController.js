@@ -12,17 +12,29 @@ import { monthRange, toMonthKey } from '../utils/month.js';
 
 const dateSchema = z.coerce.date().refine((d) => !Number.isNaN(d.getTime()), 'Invalid date');
 
+const SORTS = {
+  date_desc: { date: -1, createdAt: -1 },
+  date_asc: { date: 1, createdAt: 1 },
+  amount_desc: { amount: -1, date: -1 },
+  amount_asc: { amount: 1, date: -1 },
+};
+
 export const listTransactionsQuerySchema = z.object({
   month: monthSchema.optional(),
   category: objectIdSchema.optional(),
   type: transactionTypeSchema.optional(),
+  q: z.string().trim().max(80).optional(),
+  sort: z.enum(Object.keys(SORTS)).default('date_desc'),
 });
+
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export const createTransactionSchema = z.object({
   type: transactionTypeSchema,
   amount: amountSchema,
   categoryId: objectIdSchema,
   date: dateSchema,
+  title: z.string().trim().min(1).max(80),
   note: z.string().trim().max(500).optional(),
 });
 
@@ -44,7 +56,7 @@ async function findOwnedTransaction(userId, id) {
 }
 
 export async function listTransactions(req, res) {
-  const { month = toMonthKey(), category, type } = req.validated.query;
+  const { month = toMonthKey(), category, type, q, sort } = req.validated.query;
   const { start, end } = monthRange(month);
 
   const transactions = await Transaction.find({
@@ -52,7 +64,13 @@ export async function listTransactions(req, res) {
     date: { $gte: start, $lt: end },
     ...(category && { categoryId: category }),
     ...(type && { type }),
-  }).sort({ date: -1, createdAt: -1 });
+    ...(q && {
+      $or: [
+        { title: { $regex: escapeRegex(q), $options: 'i' } },
+        { note: { $regex: escapeRegex(q), $options: 'i' } },
+      ],
+    }),
+  }).sort(SORTS[sort]);
 
   res.json({ month, transactions });
 }

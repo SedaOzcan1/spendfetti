@@ -4,8 +4,10 @@ import cookieParser from 'cookie-parser';
 import { env, isProduction } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import authRouter from './routes/auth.js';
+import budgetsRouter from './routes/budgets.js';
 import categoriesRouter from './routes/categories.js';
 import healthRouter from './routes/health.js';
+import summaryRouter from './routes/summary.js';
 import transactionsRouter from './routes/transactions.js';
 
 export function createApp() {
@@ -23,6 +25,8 @@ export function createApp() {
   app.use('/api/auth', authRouter);
   app.use('/api/categories', categoriesRouter);
   app.use('/api/transactions', transactionsRouter);
+  app.use('/api/summary', summaryRouter);
+  app.use('/api/budgets', budgetsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

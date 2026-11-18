@@ -23,6 +23,7 @@ const expense = (overrides = {}) => ({
   amount: 120.456,
   categoryId: groceries,
   date: '2026-11-10T12:00:00.000Z',
+  title: 'Migros',
   note: 'Weekly shop',
   ...overrides,
 });
@@ -42,6 +43,7 @@ describe('POST /api/transactions', () => {
       amount: 120.46,
       categoryId: groceries,
       userId: user.id,
+      title: 'Migros',
       note: 'Weekly shop',
     });
   });
@@ -177,5 +179,34 @@ describe('DELETE /api/transactions/:id', () => {
     const { body } = await other.post('/api/transactions').send(expense());
 
     expect((await agent.delete(`/api/transactions/${body.transaction.id}`)).status).toBe(404);
+  });
+});
+
+describe('GET /api/transactions search and sort', () => {
+  it('searches title and note case-insensitively, treating input literally', async () => {
+    const { agent } = await createAuthedAgent(app);
+    await agent.post('/api/transactions').send(expense({ title: 'Migros', note: 'Weekly shop' }));
+    await agent
+      .post('/api/transactions')
+      .send(expense({ title: 'Coffee', note: 'Morning (latte)' }));
+
+    const byTitle = await agent.get('/api/transactions?month=2026-11&q=migr');
+    expect(byTitle.body.transactions.map((t) => t.title)).toEqual(['Migros']);
+
+    const byNote = await agent.get('/api/transactions?month=2026-11&q=(LATTE)');
+    expect(byNote.body.transactions.map((t) => t.title)).toEqual(['Coffee']);
+
+    const regexLike = await agent.get('/api/transactions?month=2026-11&q=.*');
+    expect(regexLike.body.transactions).toHaveLength(0);
+  });
+
+  it('sorts by amount', async () => {
+    const { agent } = await createAuthedAgent(app);
+    await agent.post('/api/transactions').send(expense({ amount: 50 }));
+    await agent.post('/api/transactions').send(expense({ amount: 500 }));
+    await agent.post('/api/transactions').send(expense({ amount: 5 }));
+
+    const res = await agent.get('/api/transactions?month=2026-11&sort=amount_desc');
+    expect(res.body.transactions.map((t) => t.amount)).toEqual([500, 50, 5]);
   });
 });
