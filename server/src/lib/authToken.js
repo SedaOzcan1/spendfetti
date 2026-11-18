@@ -11,11 +11,12 @@ export function signAuthToken(userId) {
   });
 }
 
-/** Returns the user id from a valid token, or null. */
+/** Returns { userId, issuedAt } from a valid token, or null. */
 export function verifyAuthToken(token) {
   try {
     const payload = jwt.verify(token, env.JWT_SECRET);
-    return typeof payload.sub === 'string' ? payload.sub : null;
+    if (typeof payload.sub !== 'string') return null;
+    return { userId: payload.sub, issuedAt: new Date(payload.iat * 1000) };
   } catch {
     return null;
   }

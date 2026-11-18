@@ -4,12 +4,16 @@ import { env } from '../config/env.js';
 import {
   changePassword,
   changePasswordSchema,
+  completePasswordReset,
+  forgotPassword,
+  forgotPasswordSchema,
   login,
   loginSchema,
   logout,
   me,
   register,
   registerSchema,
+  resetPasswordSchema,
   updateMe,
   updateMeSchema,
 } from '../controllers/authController.js';
@@ -30,6 +34,13 @@ const credentialsLimiter = rateLimit({
 router.post('/register', credentialsLimiter, validate(registerSchema), register);
 router.post('/login', credentialsLimiter, validate(loginSchema), login);
 router.post('/logout', logout);
+router.post('/forgot-password', credentialsLimiter, validate(forgotPasswordSchema), forgotPassword);
+router.post(
+  '/reset-password',
+  credentialsLimiter,
+  validate(resetPasswordSchema),
+  completePasswordReset,
+);
 router.get('/me', requireAuth, me);
 router.patch('/me', requireAuth, validate(updateMeSchema), updateMe);
 router.put(

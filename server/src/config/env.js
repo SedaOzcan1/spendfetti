@@ -10,6 +10,9 @@ const envSchema = z
     JWT_SECRET: z.string().min(1).default(DEV_JWT_SECRET),
     JWT_EXPIRES_IN_DAYS: z.coerce.number().int().positive().default(7),
     CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
+    // e.g. smtps://user:pass@smtp.example.com:465 — without it, emails are logged
+    SMTP_URL: z.string().url().optional(),
+    MAIL_FROM: z.string().default('Spendfetti <no-reply@spendfetti.app>'),
     SEED_DEMO: z
       .enum(['true', 'false'])
       .default('false')

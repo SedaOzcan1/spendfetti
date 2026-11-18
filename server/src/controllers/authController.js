@@ -4,6 +4,7 @@ import { clearAuthCookie, setAuthCookie } from '../lib/authToken.js';
 import { HttpError } from '../lib/httpError.js';
 import { User } from '../models/index.js';
 import { notifyWelcome } from '../services/notificationService.js';
+import { requestPasswordReset, resetPassword } from '../services/passwordResetService.js';
 
 const BCRYPT_ROUNDS = 12;
 
@@ -43,6 +44,13 @@ export const updateMeSchema = z
 export const changePasswordSchema = z.object({
   currentPassword: z.string().min(1).max(72),
   newPassword: passwordSchema,
+});
+
+export const forgotPasswordSchema = z.object({ email: z.email().trim().toLowerCase() });
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(20).max(200),
+  password: passwordSchema,
 });
 
 export async function register(req, res) {
@@ -98,6 +106,24 @@ export async function changePassword(req, res) {
   }
 
   user.passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+  user.passwordChangedAt = new Date();
   await user.save();
+
+  // Other devices are signed out; keep this one signed in with a fresh token
+  setAuthCookie(res, user._id);
+  res.status(204).end();
+}
+
+export async function forgotPassword(req, res) {
+  await requestPasswordReset(req.validated.body.email);
+  res.status(202).json({
+    message: 'If an account exists for this email, we’ve sent a link to reset the password.',
+  });
+}
+
+export async function completePasswordReset(req, res) {
+  const { token, password } = req.validated.body;
+  await resetPassword(token, password);
+  clearAuthCookie(res);
   res.status(204).end();
 }

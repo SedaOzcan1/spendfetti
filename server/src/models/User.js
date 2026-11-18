@@ -27,6 +27,12 @@ const userSchema = new Schema(
     funBudgetRatio: { type: Number, default: 0.2, min: 0, max: 1 },
     confettiEnabled: { type: Boolean, default: true },
     lastLoginAt: { type: Date },
+    // Sessions issued before this moment are rejected
+    passwordChangedAt: { type: Date },
+    passwordReset: {
+      type: new Schema({ tokenHash: String, expiresAt: Date }, { _id: false }),
+      select: false,
+    },
     seenAchievements: { type: [seenAchievementSchema], default: [] },
   },
   {
@@ -37,6 +43,8 @@ const userSchema = new Schema(
         delete ret._id;
         delete ret.__v;
         delete ret.passwordHash;
+        delete ret.passwordReset;
+        delete ret.passwordChangedAt;
         delete ret.seenAchievements;
         return ret;
       },
